@@ -1,36 +1,21 @@
 package metro;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) {
-        LinkedList<String> stationList = new LinkedList<>();
+    static String FILE_NAME;
 
-        String pathToFile = args[0];
-        File file = new File(pathToFile);
+    public static void main(String[] args) throws IOException {
 
-        try (Scanner scanner = new Scanner(file)) {
-            while (scanner.hasNext()) {
-                String readLine = scanner.nextLine();
-                stationList.add(readLine);
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("Error: No file found: " + pathToFile);
+        if (args.length > 0) {
+            FILE_NAME = args[0];
+        } else {
+            System.out.println("Error: Args not found");
         }
 
-        if (stationList.size() == 0) {
-            return;
-        }
+        UserInterface userInterface = new UserInterface();
+        userInterface.start();
 
-        stationList.addFirst("depot");
-        stationList.addLast("depot");
-
-        for (int i = 2; i < stationList.size(); i++) {
-            System.out.printf("%s - %s - %s\n", stationList.get(i - 2), stationList.get(i - 1), stationList.get(i));
-        }
     }
 }
 

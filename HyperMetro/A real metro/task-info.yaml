@@ -221,6 +221,78 @@ files:
 - name: test/prague.json
   visible: false
   learner_created: false
-feedback_link: https://hyperskill.org/projects/120/stages/650/implement#comment
-status: Unchecked
+- name: src/metro/jsonparser/JSONLaneParser.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/handler/AppendCommandHandler.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/handler/RemoveCommandHandler.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/handler/OutputCommandHandler.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/handler/ConnectCommandHandler.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/handler/AddHeadCommandHandler.java
+  visible: true
+  learner_created: true
+- name: src/metro/list/Node.java
+  visible: true
+  learner_created: true
+- name: src/metro/list/DoublyLinkedList.java
+  visible: true
+  learner_created: true
+- name: src/metro/utils/JsonUtils.java
+  visible: true
+  learner_created: true
+- name: src/metro/hmetro/Station.java
+  visible: true
+  learner_created: true
+- name: src/metro/hmetro/Metro.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/AddHeadCommand.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/Executor.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/RemoveCommand.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/CommandLineParser.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/AppendCommand.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/ConnectCommand.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/Command.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/ExitCommand.java
+  visible: true
+  learner_created: true
+- name: src/metro/commands/OutputCommand.java
+  visible: true
+  learner_created: true
+- name: src/metro/exeception/StationNotFoundException.java
+  visible: true
+  learner_created: true
+- name: src/metro/exeception/CommandNotFoundException.java
+  visible: true
+  learner_created: true
+- name: src/metro/exeception/LineNotFoundException.java
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/10343#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Wed, 07 Sep 2022 10:18:51 UTC
 record: -1

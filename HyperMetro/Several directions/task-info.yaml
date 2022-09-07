@@ -224,9 +224,9 @@ files:
 - name: src/metro/UserInterface.java
   visible: true
   learner_created: true
-feedback_link: https://hyperskill.org/projects/120/stages/649/implement#comment
+feedback_link: https://hyperskill.org/learn/step/10342#comment
 status: Solved
 feedback:
   message: Congratulations!
   time: Sat, 03 Sep 2022 08:24:09 UTC
-record: -1
+record: 2

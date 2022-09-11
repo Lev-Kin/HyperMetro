@@ -1,16 +1,5 @@
 type: edu
 files:
-- name: src/metro/Main.java
-  visible: true
-  text: |
-    package metro;
-
-    public class Main {
-        public static void main(String[] args) {
-            System.out.println("Hello, world!");
-        }
-    }
-  learner_created: false
 - name: test/Tests.java
   visible: false
   text: |-
@@ -338,6 +327,75 @@ files:
 - name: test/prague.json
   visible: false
   learner_created: false
+- name: src/metro/data/MetroStationList.java
+  visible: true
+  learner_created: true
+- name: src/metro/data/MetroInputPoint.java
+  visible: true
+  learner_created: true
+- name: src/metro/data/MetroStation.java
+  visible: true
+  learner_created: true
+- name: src/metro/data/MetroTransfer.java
+  visible: true
+  learner_created: true
+- name: src/metro/parsing/MapToClassParser.java
+  visible: true
+  learner_created: true
+- name: src/metro/parsing/MetroNameComparator.java
+  visible: true
+  learner_created: true
+- name: build.gradle
+  visible: true
+  learner_created: true
+- name: src/metro/data/Node.java
+  visible: true
+  learner_created: true
+- name: src/metro/data/Line.java
+  visible: true
+  learner_created: true
+- name: src/metro/data/Network.java
+  visible: true
+  learner_created: true
+- name: src/metro/data/PriorityNode.java
+  visible: true
+  learner_created: true
+- name: src/metro/data/MissingRouteException.java
+  visible: true
+  learner_created: true
+- name: src/metro/Main.java
+  visible: true
+  learner_created: true
+- name: src/metro/Line.java
+  visible: true
+  learner_created: true
+- name: src/metro/Neighbors.java
+  visible: true
+  learner_created: true
+- name: src/metro/Station.java
+  visible: true
+  learner_created: true
+- name: src/metro/Route.java
+  visible: true
+  learner_created: true
+- name: src/metro/ArgumentTokenizer.java
+  visible: true
+  learner_created: true
+- name: src/metro/Tracker.java
+  visible: true
+  learner_created: true
+- name: src/metro/TimeToNeighbors.java
+  visible: true
+  learner_created: true
+- name: src/metro/Metro.java
+  visible: true
+  learner_created: true
+- name: src/metro/TransferStation.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/10345#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Sun, 11 Sep 2022 08:10:57 UTC
 record: -1

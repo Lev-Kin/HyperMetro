@@ -1,119 +1,127 @@
 package metro;
 
-import com.google.gson.JsonObject;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Metro {
-    private static Metro metro;
+    List<Line> lines = new ArrayList<>();
 
-    private Map<String, Line> map = new HashMap<String, Line>();
-
-    public void fastestRoute(String lineName1, String stationName1, String lineName2, String stationName2) {
-        Station start = getStation(lineName1, stationName1);
-        Station dest = getStation(lineName2, stationName2);
-
-        Route route = new Route(start, dest);
-        route.findAndPrintFastestRoute();
-
+    public void printLine(String lineName) {
+        Line line = getLine(lineName);
+        System.out.print(line.stationList());
     }
 
-    public void route(String lineName1, String stationName1, String lineName2, String stationName2) {
-        Station start = getStation(lineName1, stationName1);
-        Station dest = getStation(lineName2, stationName2);
-
-        Route route = new Route(start, dest);
-        route.findAndPrintRoute();
-
+    public void appendStation(String lineName, String stationName) {
+        Line line = addLineIfAbsent(lineName);
+        line.addStation(new Station(stationName, line));
     }
 
-    public void connect(String lineName1, String stationName1, String lineName2, String stationName2) {
+    public void addHeadStation(String lineName, String stationName) {
+        Line line = addLineIfAbsent(lineName);
+        line.addHeadStation(new Station(stationName, line));
+    }
 
-        if (containsLine(lineName1) && containsLine(lineName2)) {
-            Station station1 = getLine(lineName1).getStation(stationName1);
-            Station station2 = getLine(lineName2).getStation(stationName2);
+    public void removeStation(String lineName, String stationName) {
+        Line line = getLine(lineName);
+        line.removeStation(stationName);
+    }
 
-            if (station1 != null && station2 != null) {
-                station1.connect(station2);
-                station2.connect(station1);
+    public void connectStations(String lineName1, String stationName1, String lineName2, String stationName2) {
+        Line line1 = getLine(lineName1);
+        Station station1 = line1.getByName(stationName1);
+        Line line2 = getLine(lineName2);
+        Station station2 = line2.getByName(stationName2);
+
+        station1.addTransfer(station2);
+        station2.addTransfer(station1);
+    }
+
+    public void printRoute(String lineName1, String stationName1, String lineName2, String stationName2) {
+
+        Line line1 = getLine(lineName1);
+        Station station1 = line1.getByName(stationName1);
+        Line line2 = getLine(lineName2);
+        Station station2 = line2.getByName(stationName2);
+
+        Map<Station, Route> routes = station1.getAllRoutes();
+        List<Station> path = routes.getOrDefault(station2, Route.empty()).path;
+        if (path.isEmpty()) {
+            System.out.println("No such route!");
+            return;
+        }
+
+        Station prevStation = path.get(0);
+        for (Station station : path) {
+            Line line = station.getLine();
+            Line prevLine = prevStation.getLine();
+            if (!line.equals(prevLine)) {
+                System.out.printf("Transition to line %s\n", line);
+                System.out.println(prevStation.getTransitStation(line));
             }
+            System.out.println(station.getName());
+            prevStation = station;
         }
     }
 
-    public void add(String lineName, String stationName, int timeToNext) {
-        if (!containsLine(lineName)) {
-            addLine(lineName, new Line());
-        }
+    public void printFastestRoute(String lineName1, String stationName1, String lineName2, String stationName2) {
+        Line line1 = getLine(lineName1);
+        Station station1 = line1.getByName(stationName1);
+        Line line2 = getLine(lineName2);
+        Station station2 = line2.getByName(stationName2);
 
-        getLine(lineName).addToTail(new Station(stationName, timeToNext));
-    }
-
-    public void addToTail(String lineName, String stationName) {
-        if (!containsLine(lineName)) {
-            addLine(lineName, new Line());
-        }
-
-        getLine(lineName).addToTail(new Station(stationName));
-    }
-
-    public void addToHead(String lineName, String stationName) {
-        if (!containsLine(lineName)) {
-            addLine(lineName, new Line());
-        }
-
-        getLine(lineName).addToHead(new Station(stationName));
-    }
-
-    public void remove(String lineName, String stationName) {
-        if (!containsLine(lineName)) {
+        Map<Station, Route> routes = station1.getAllRoutes();
+        List<Station> path = routes.getOrDefault(station2, Route.empty()).path;
+        if (path.isEmpty()) {
+            System.out.println("No such route!");
             return;
         }
 
-        getLine(lineName).remove(stationName);
-    }
-
-    public void outputLine(String lineName) {
-        if (!containsLine(lineName)) {
-            return;
+        Station prevStation = path.get(0);
+        for (Station station : path) {
+            Line line = station.getLine();
+            Line prevLine = prevStation.getLine();
+            if (!line.equals(prevLine)) {
+                System.out.printf("Transition to line %s\n", line);
+                System.out.println(prevStation.getTransitStation(line));
+            }
+            System.out.println(station.getName());
+            prevStation = station;
         }
-
-        getLine(lineName).output();
+        System.out.printf("Total: %d minutes in the way\n", routes.get(station2).time);
     }
 
-    public Line getLine(String lineName) {
-        return map.get(lineName);
+    public boolean importLines(String filename) {
+        Util.importLines(filename, this);
+        return !lines.isEmpty();
     }
 
-    private boolean containsLine(String lineName) {
-        return getLine(lineName) != null;
+    Line addLineIfAbsent(String name) {
+        return findLine(name)
+                .orElseGet(() -> {
+                    Line newLine = new Line(name);
+                    lines.add(newLine);
+                    return newLine;
+                });
     }
 
-    public Station getStation(String lineName, String stationName) {
-        if (containsLine(lineName)) {
-            return getLine(lineName).getStation(stationName);
-        }
-
-        return null;
+    private Line getLine(String name) {
+        return findLine(name)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid line name"));
     }
 
-    private void addLine(String lineName, Line line) {
-        map.put(lineName, line);
+    private Optional<Line> findLine(String name) {
+        return lines.stream()
+                .filter(i -> name.equalsIgnoreCase(i.getName()))
+                .findAny();
     }
+}
 
-    public static void initInstanceFromJsonObject(JsonObject metroJsonObject) {
-        metro = new Metro();
+class WayToStation {
+    Station station;
+    int time;
 
-        for (String lineName : metroJsonObject.keySet()) {
-            JsonObject lineJsonObject = metroJsonObject.get(lineName).getAsJsonObject();
-
-            Line line = Line.parseFromJsonObject(lineJsonObject, lineName);
-            metro.addLine(lineName, line);
-        }
-    }
-
-    public static Metro getInstance() {
-        return metro;
+    public WayToStation(Station station, int time) {
+        this.station = station;
+        this.time = time;
     }
 }
 

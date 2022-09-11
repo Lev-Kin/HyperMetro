@@ -1,159 +1,187 @@
 package metro;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Station {
-    private String lineName;
+    private final int TRANSFER_TIME = 5;
+    private final String name;
+    private final Line line;
+    private final List<Station> transfers;
+    private int timeToNext;
+    private final List<Station> prev;
+    private final List<Station> next;
 
-    private String stationName;
-
-    private Neighbors neighbors;
-
-    private TimeToNeighbors timetoNeighbors;
-
-    public Station(String stationName) {
-        this(stationName, Integer.MAX_VALUE);
+    public Station(String name, Line line) {
+        this.name = name;
+        this.line = line;
+        transfers = new ArrayList<>();
+        next = new ArrayList<>();
+        prev = new ArrayList<>();
     }
 
-    public Station(String stationName, int timeToNext) {
-        this.stationName = stationName;
-        this.neighbors = new Neighbors();
-        this.timetoNeighbors = new TimeToNeighbors();
-        setTimeToNext(timeToNext);
+    public String getName() {
+        return name;
     }
 
-    public void connect(Station otherStation) {
-        String line = otherStation.getLineName();
-        String name = otherStation.getStationName();
-        setTransferStation(new TransferStation(line, name));
+    public List<Station> getPrev() {
+        return prev;
     }
 
-
-    public String getLineName() {
-        return lineName;
+    public List<Station> getNext() {
+        return next;
     }
 
-    public void setLineName(String lineName) {
-        this.lineName = lineName;
-    }
-
-    public String getStationName() {
-        return stationName;
-    }
-
-    public Station getNext() {
-        return neighbors.getNext();
-    }
-
-    public void setNext(Station station) {
-        neighbors.setNext(station);
-        if (station != null) {
-            station.setPrev(this);
-        }
-    }
-
-    public Station getPrev() {
-        return this.neighbors.getPrev();
-    }
-
-    public void setPrev(Station prev) {
-        this.neighbors.setPrev(prev);
-        if (prev != null) {
-            int timeToPrev = prev.getTimeToNext();
-            this.setTimeToPrev(timeToPrev);
-        }
-    }
-
-    public TransferStation getTransferStation() {
-        return neighbors.getTransferStation();
-    }
-
-    public void setTransferStation(TransferStation transferStation) {
-        this.neighbors.setTransferStation(transferStation);
-    }
-
-    public List<Station> getNeighbors() {
-        return neighbors.getNeighborList();
-    }
-
-    public int getTimeToPrev() {
-        return timetoNeighbors.getTimeToPrev();
-    }
-
-    public void setTimeToPrev(int timeToPrev) {
-        timetoNeighbors.setTimeToPrev(timeToPrev);
+    public Line getLine() {
+        return line;
     }
 
     public int getTimeToNext() {
-        return timetoNeighbors.getTimeToNext();
+        return timeToNext;
     }
 
     public void setTimeToNext(int timeToNext) {
-        timetoNeighbors.setTimeToNext(timeToNext);
+        this.timeToNext = timeToNext;
     }
 
-    public int getTimeToTransferStation() {
-        return timetoNeighbors.getTimeToTransferStation();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Station station = (Station) o;
+        return Objects.equals(name, station.name) && Objects.equals(line, station.line);
     }
 
-
-    public int getTimeTo(Station station) {
-
-        if (Objects.equals(station, getNext())) {
-            return getTimeToNext();
-        } else if (Objects.equals(station, getPrev())) {
-            return getTimeToPrev();
-        } else if (station.getStationName().equals(getTransferStation().getStationName())) {
-            return getTimeToTransferStation();
-        }
-
-        return Integer.MAX_VALUE;
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, line);
     }
 
-    public boolean transferStationIsTheStationItSelf(TransferStation transferStation) {
-        return getStationName().equals(transferStation.getStationName());
-    }
-
-
+    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        return getName();
+    }
 
-        sb.append(stationName);
+    public void addNext(Station station) {
+        next.add(station);
+    }
 
-        if (getTransferStation() != null) {
-            String name = getTransferStation().getStationName();
-            String line = getTransferStation().getLineName();
+    public void addPrev(Station station) {
+        prev.add(station);
+    }
 
-            sb.append(String.format(" - %s (%s)", name, line));
+    public void removeNext(Station station) {
+        next.remove(station);
+    }
+
+    public void removePrev(Station station) {
+        prev.remove(station);
+    }
+
+    public void addTransfer(Station station) {
+        transfers.add(station);
+    }
+
+    public List<Station> getNeighbors() {
+        return getNeighborWays().stream()
+                .map(way -> way.station)
+                .collect(Collectors.toList());
+    }
+
+    public List<WayToStation> getNeighborWays() {
+        List<WayToStation> ways = getLocalNeighborWays();
+
+        transfers.forEach(st -> {
+            st.getPrev().forEach(s -> ways.add(new WayToStation(s, s.getTimeToNext() + TRANSFER_TIME)));
+            st.getNext().forEach(s -> ways.add(new WayToStation(s, st.getTimeToNext() + TRANSFER_TIME)));
+        });
+        return ways;
+    }
+
+    public List<WayToStation> getLocalNeighborWays() {
+        List<WayToStation> ways = new ArrayList<>();
+
+        getPrev().forEach(st -> ways.add(new WayToStation(st, st.getTimeToNext())));
+        getNext().forEach(st -> ways.add(new WayToStation(st, getTimeToNext())));
+
+        return ways;
+    }
+
+    public String getFullName() {
+        return String.format("%s (%s line)", getName(), line.getName());
+    }
+
+    public String getNameWithTransfers() {
+        StringBuilder sb = new StringBuilder(getName());
+        if (!transfers.isEmpty()) {
+            sb.append(transfers.stream()
+                    .map(Station::getFullName)
+                    .collect(Collectors.joining(" - ", " - ", "")));
         }
-
+        sb.append(System.lineSeparator());
         return sb.toString();
     }
 
-    public static Station parseFromJsonObject(JsonObject stationJsonObject) {
-        String stationName = stationJsonObject.get("name").getAsString();
-        int timeToNext = Integer.MAX_VALUE;
-
-        if (stationJsonObject.get("time") != JsonNull.INSTANCE && stationJsonObject.get("time") != null) {
-            timeToNext = stationJsonObject.get("time").getAsInt();
-        }
-
-        Station station = new Station(stationName, timeToNext);
-
-        JsonArray transferStationJsonArray = stationJsonObject.get("transfer").getAsJsonArray();
-        for (int i = 0; i < transferStationJsonArray.size(); i++) {
-            TransferStation transferStation = TransferStation.createInstanceFromJsonObject(transferStationJsonArray.get(i).getAsJsonObject());
-
-            station.setTransferStation(transferStation);
-
-        }
-
-        return station;
+    public Station getTransitStation(Line line) {
+        return transfers.stream()
+                .filter(s -> s.getLine().equals(line))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("There is no transfer to station %s from line %s",
+                                this, line)));
     }
 
+    public Map<Station, Route> getAllRoutes() {
+        return getRoutes(true);
+    }
+
+    public Map<Station, Route> getLocalRoutes() {
+        return getRoutes(false);
+    }
+
+    private Map<Station, Route> getRoutes(boolean global) {
+        Map<Station, Route> routes = new HashMap<>();
+        Set<Station> queue = new HashSet<>();
+        Set<Station> visited = new HashSet<>();
+        queue.add(this);
+        routes.put(this, new Route(0, List.of(this)));
+
+        while (!queue.isEmpty()) {
+            Station closest = queue.stream()
+                    .min(Comparator.comparingInt(st -> routes.getOrDefault(st, Route.empty()).time))
+                    .get();
+            List<WayToStation> ways = global ? closest.getNeighborWays() : closest.getLocalNeighborWays();
+            ways.forEach(way -> {
+                int oldTime = routes.getOrDefault(way.station, Route.empty()).time;
+                int time = routes.get(closest).time + way.time;
+                if (time < oldTime) {
+                    List<Station> newPath = new ArrayList<>(routes.get(closest).path);
+                    newPath.add(way.station);
+                    routes.put(way.station, new Route(time, newPath));
+                }
+                if (!visited.contains(way.station)) {
+                    queue.add(way.station);
+                }
+            });
+            queue.remove(closest);
+            visited.add(closest);
+        }
+
+        return routes;
+    }
 }
+
+class Route {
+    int time;
+    List<Station> path;
+
+    public Route(int time, List<Station> path) {
+        this.time = time;
+        this.path = path;
+    }
+
+    static Route empty() {
+        return new Route(Integer.MAX_VALUE, List.of());
+    }
+}
+

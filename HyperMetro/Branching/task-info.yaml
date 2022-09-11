@@ -195,6 +195,70 @@ files:
         }
     }
   learner_created: false
+- name: build.gradle
+  visible: true
+  text: |-
+    plugins {
+        id 'java'
+    }
+
+    group 'com.genspark'
+    version '1.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation 'com.fasterxml.jackson.core:jackson-core:2.10.1'
+        implementation 'com.fasterxml.jackson.core:jackson-annotations:2.10.1'
+        implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.10.1'
+        implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.10.1'
+    }
+  learner_created: true
+- name: src/metro/data/MetroStationList.java
+  visible: true
+  learner_created: true
+- name: src/metro/data/MetroInputPoint.java
+  visible: true
+  learner_created: true
+- name: src/metro/data/MetroStation.java
+  visible: true
+  learner_created: true
+- name: src/metro/data/MetroTransfer.java
+  visible: true
+  learner_created: true
+- name: src/metro/parsing/MapToClassParser.java
+  visible: true
+  learner_created: true
+- name: src/metro/parsing/MetroNameComparator.java
+  visible: true
+  learner_created: true
+- name: src/metro/structure/Graph.java
+  visible: true
+  learner_created: true
+- name: src/metro/Line.java
+  visible: true
+  learner_created: true
+- name: src/metro/Station.java
+  visible: true
+  learner_created: true
+- name: src/metro/CLI.java
+  visible: true
+  learner_created: true
+- name: src/metro/Util.java
+  visible: true
+  learner_created: true
+- name: src/metro/Command.java
+  visible: true
+  learner_created: true
+- name: src/metro/Metro.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/10346#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">JetBrains
+    Academy</a> to continue learning.
+  time: Sun, 11 Sep 2022 10:23:20 UTC
 record: -1
